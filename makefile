@@ -9,6 +9,15 @@ BUILDROOT ?= .
 DEFAULT_PROJECT ?=
 TOOLCHAIN_PREFIX ?=
 
+
+ifeq ($(findstring user, $(MAKECMDGOALS)), user)
+USER := user
+TEMP := $(filter-out user, $(MAKECMDGOALS))
+MAKECMDGOALS = $(TEMP)
+else
+USER := eng
+endif
+
 # check if LKROOT is already a part of LKINC list and add it only if it is not
 ifeq ($(filter $(LKROOT),$(LKINC)), )
 LKINC := $(LKROOT) $(LKINC)
@@ -27,7 +36,9 @@ export LKINC
 export BUILDROOT
 export DEFAULT_PROJECT
 export TOOLCHAIN_PREFIX
+export USER
 
+$(warning OS_INFO=$(OS_INFO))
 # veneer makefile that calls into the engine with lk as the build root
 # if we're the top level invocation, call ourselves with additional args
 _top:
@@ -40,4 +51,6 @@ _top:
 $(MAKECMDGOALS): _top
 	@:
 
-.PHONY: _top
+user:
+	@echo This is user build!
+.PHONY: _top user
